@@ -1,7 +1,8 @@
-import { and, gte, lte, count, sql, eq } from "drizzle-orm";
+import { and, count, eq, gte, lte } from "drizzle-orm";
 import { db } from "../db";
 import { goalCompletions, goals } from "../db/schema";
 import dayjs from "dayjs";
+import { sql } from "drizzle-orm";
 
 interface CreateGoalCompletionRequest {
   goalId: string;
@@ -34,9 +35,9 @@ export async function createGoalCompletion({
     .with(goalCompletionCounts)
     .select({
       desiredWeeklyFrequency: goals.desiredWeeklyFrequency,
-      completionCount: sql`
-            COALESCE(${goalCompletionCounts.completionCount}, 0)
-        `.mapWith(Number),
+      completionCount: sql/*sql*/ `
+        COALESCE(${goalCompletionCounts.completionCount}, 0)
+      `.mapWith(Number),
     })
     .from(goals)
     .leftJoin(goalCompletionCounts, eq(goalCompletionCounts.goalId, goals.id))
